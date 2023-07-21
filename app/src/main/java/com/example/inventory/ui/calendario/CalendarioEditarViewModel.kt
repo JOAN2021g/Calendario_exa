@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.calendario
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,22 +22,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.CalendariosRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
- */
-class ItemEditViewModel(
+
+class CalendarioEditarViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository
+    private val itemsRepository: CalendariosRepository
 ) : ViewModel() {
 
-    /**
-     * Holds current item ui state
-     */
+
     var itemUiState by mutableStateOf(ItemUiState())
         private set
 
@@ -45,34 +41,31 @@ class ItemEditViewModel(
 
     init {
         viewModelScope.launch {
-            itemUiState = itemsRepository.getItemStream(itemId)
+            itemUiState = itemsRepository.getCalendarioStream(itemId)
                 .filterNotNull()
                 .first()
                 .toItemUiState(true)
         }
     }
 
-    /**
-     * Update the item in the [ItemsRepository]'s data source
-     */
+
     suspend fun updateItem() {
-        if (validateInput(itemUiState.itemDetails)) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+        if (validateInput(itemUiState.calendarioDetails)) {
+            itemsRepository.updateCalendario(itemUiState.calendarioDetails.toItem())
         }
     }
 
-    /**
-     * Updates the [itemUiState] with the value provided in the argument. This method also triggers
-     * a validation for input values.
-     */
-    fun updateUiState(itemDetails: ItemDetails) {
+
+    fun updateUiState(calendarioDetails: CalendarioDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+            ItemUiState(calendarioDetails = calendarioDetails, isEntryValid = validateInput(calendarioDetails))
     }
 
-    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+    private fun validateInput(uiState: CalendarioDetails = itemUiState.calendarioDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            mes.isNotBlank() && dias.isNotBlank() && semanas.isNotBlank() && festividad.isNotBlank()
         }
     }
 }
+
+

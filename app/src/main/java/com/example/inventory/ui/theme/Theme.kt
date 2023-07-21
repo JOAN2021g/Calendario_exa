@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
+
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -116,7 +117,7 @@ fun InventoryTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            if(darkTheme) {
+            if (darkTheme) {
                 window.statusBarColor = colorScheme.primary.toArgb()
             } else {
                 window.statusBarColor = Color.Transparent.toArgb()

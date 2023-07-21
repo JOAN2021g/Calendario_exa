@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.calendario
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,17 +25,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
@@ -43,14 +48,14 @@ import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
 
 object ItemEntryDestination : NavigationDestination {
     override val route = "item_entry"
-    override val titleRes = R.string.item_entry_title
+    override val titleRes = R.string.calendario_entry_title
 }
+val darkBackgroundColor = Color(0xFF000000)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemEntryScreen(
     navigateBack: () -> Unit,
@@ -72,11 +77,7 @@ fun ItemEntryScreen(
             itemUiState = viewModel.itemUiState,
             onItemValueChange = viewModel::updateUiState,
             onSaveClick = {
-                // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be saved in the Database. This is because when config
-                // change occurs, the Activity will be recreated and the rememberCoroutineScope will
-                // be cancelled - since the scope is bound to composition.
-                coroutineScope.launch {
+                                coroutineScope.launch {
                     viewModel.saveItem()
                     navigateBack()
                 }
@@ -85,6 +86,7 @@ fun ItemEntryScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
+                .background(Color(0xFF808190))
         )
     }
 }
@@ -92,16 +94,25 @@ fun ItemEntryScreen(
 @Composable
 fun ItemEntryBody(
     itemUiState: ItemUiState,
-    onItemValueChange: (ItemDetails) -> Unit,
+    onItemValueChange: (CalendarioDetails) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+        modifier = modifier.background(Color(0xFF808190)).padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large))
     ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Joan\nCalendario\nSepimo PARALELO B",
+            textAlign = TextAlign.Center, // Centra el texto
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.Yellow
+            )
+        )
         ItemInputForm(
-            itemDetails = itemUiState.itemDetails,
+            calendarioDetails = itemUiState.calendarioDetails,
             onValueChange = onItemValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -109,18 +120,19 @@ fun ItemEntryBody(
             onClick = onSaveClick,
             enabled = itemUiState.isEntryValid,
             shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().background(color=Color.Yellow)
         ) {
-            Text(text = stringResource(R.string.save_action))
+            Text(text = stringResource(R.string.save_action),color=Color.Black, fontWeight = FontWeight.Bold)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemInputForm(
-    itemDetails: ItemDetails,
+    calendarioDetails: CalendarioDetails,
     modifier: Modifier = Modifier,
-    onValueChange: (ItemDetails) -> Unit = {},
+    onValueChange: (CalendarioDetails) -> Unit = {},
     enabled: Boolean = true
 ) {
     Column(
@@ -128,45 +140,50 @@ fun ItemInputForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = itemDetails.name,
-            onValueChange = { onValueChange(itemDetails.copy(name = it)) },
-            label = { Text(stringResource(R.string.item_name_req)) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
+            value = calendarioDetails.mes,
+            onValueChange = { onValueChange(calendarioDetails.copy(mes = it)) },
+            label = { Text(stringResource(R.string.calendario_mes_req),color=Color.Yellow) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White)
         )
         OutlinedTextField(
-            value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            label = { Text(stringResource(R.string.item_price_req)) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
-        OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            value = calendarioDetails.dias,
+            onValueChange = { onValueChange(calendarioDetails.copy(dias = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text(stringResource(R.string.quantity_req)) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
+            label = { Text(stringResource(R.string.calendario_dias_req),color=Color.Yellow) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White)
         )
+        OutlinedTextField(
+            value = calendarioDetails.semanas,
+            onValueChange = { onValueChange(calendarioDetails.copy(semanas = it)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text(stringResource(R.string.semanas_req),color=Color.Yellow) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White)
+        )
+
+        OutlinedTextField(
+            value = calendarioDetails.festividad,
+            onValueChange = { onValueChange(calendarioDetails.copy(festividad = it)) },
+            label = { Text(stringResource(R.string.festividad_req),color=Color.Yellow) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White)
+        )
+
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium)),
+                color = Color.Yellow
             )
         }
     }
@@ -177,8 +194,8 @@ fun ItemInputForm(
 private fun ItemEntryScreenPreview() {
     InventoryTheme {
         ItemEntryBody(itemUiState = ItemUiState(
-            ItemDetails(
-                name = "Item name", price = "10.00", quantity = "5"
+            CalendarioDetails(
+                mes = "Nombre mes", dias = "dias", semanas= "semanas", festividad = "100"
             )
         ), onItemValueChange = {}, onSaveClick = {})
     }

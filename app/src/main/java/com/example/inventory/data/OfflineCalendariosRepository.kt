@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-buildscript {
-    ext {
-        room_version = '2.5.1'
-    }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '8.0.1' apply false
-    id 'com.android.library' version '8.0.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.8.21' apply false
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+package com.example.inventory.data
+
+import kotlinx.coroutines.flow.Flow
+
+class OfflineCalendariosRepository(private val itemDao: CalendarioDao) : CalendariosRepository {
+    override fun getAllCalendarioStream(): Flow<List<Calendario>> = itemDao.getAllCalendarios()
+
+    override fun getCalendarioStream(id: Int): Flow<Calendario?> = itemDao.getCalendario(id)
+
+    override suspend fun insertCalendario(item: Calendario) = itemDao.insert(item)
+
+    override suspend fun deleteCalendario(item: Calendario) = itemDao.delete(item)
+
+    override suspend fun updateCalendario(item: Calendario) = itemDao.update(item)
 }
