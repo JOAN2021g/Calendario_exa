@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.calendario
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.CalendariosRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,24 +28,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve, update and delete an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve, update and delete an calendario from the [CalendariosRepository]'s data source.
  */
 class ItemDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository,
+    private val itemsRepository: CalendariosRepository,
 ) : ViewModel() {
 
     private val itemId: Int = checkNotNull(savedStateHandle[ItemDetailsDestination.itemIdArg])
 
     /**
-     * Holds the item details ui state. The data is retrieved from [ItemsRepository] and mapped to
+     * Holds the almacen details ui state. The data is retrieved from [CalendariosRepository] and mapped to
      * the UI state.
      */
     val uiState: StateFlow<ItemDetailsUiState> =
-        itemsRepository.getItemStream(itemId)
+        itemsRepository.getCalendarioStream(itemId)
             .filterNotNull()
             .map {
-                ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
+                ItemDetailsUiState(outOfStock = it.dias <= 0, calendarioDetails = it.toItemDetails())
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -53,22 +53,22 @@ class ItemDetailsViewModel(
             )
 
     /**
-     * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
+     * Reduces the almacen quantity by one and update the [CalendariosRepository]'s data source.
      */
     fun reduceQuantityByOne() {
         viewModelScope.launch {
-            val currentItem = uiState.value.itemDetails.toItem()
-            if (currentItem.quantity > 0) {
-                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
+            val currentItem = uiState.value.calendarioDetails.toItem()
+            if (currentItem.dias > 0) {
+                itemsRepository.updateCalendario(currentItem.copy(dias = currentItem.dias - 1))
             }
         }
     }
 
     /**
-     * Deletes the item from the [ItemsRepository]'s data source.
+     * Deletes the almacen from the [CalendariosRepository]'s data source.
      */
     suspend fun deleteItem() {
-        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+        itemsRepository.deleteCalendario(uiState.value.calendarioDetails.toItem())
     }
 
     companion object {
@@ -81,5 +81,5 @@ class ItemDetailsViewModel(
  */
 data class ItemDetailsUiState(
     val outOfStock: Boolean = true,
-    val itemDetails: ItemDetails = ItemDetails()
+    val calendarioDetails: CalendarioDetails = CalendarioDetails()
 )

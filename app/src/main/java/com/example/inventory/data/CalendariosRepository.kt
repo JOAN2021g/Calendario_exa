@@ -19,31 +19,31 @@ package com.example.inventory.data
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Repository that provides insert, update, delete, and retrieve of [Item] from a given data source.
+ * Repository that provides insert, update, delete, and retrieve of [Calendario] from a given data source.
  */
-interface ItemsRepository {
+interface CalendariosRepository {
     /**
      * Retrieve all the items from the the given data source.
      */
-    fun getAllItemsStream(): Flow<List<Item>>
+    fun getAllCalendarioStream(): Flow<List<Calendario>>
 
     /**
-     * Retrieve an item from the given data source that matches with the [id].
+     * Retrieve an calendario from the given data source that matches with the [id].
      */
-    fun getItemStream(id: Int): Flow<Item?>
+    fun getCalendarioStream(id: Int): Flow<Calendario?>
 
     /**
-     * Insert item in the data source
+     * Insert calendario in the data source
      */
-    suspend fun insertItem(item: Item)
+    suspend fun insertCalendario(item: Calendario)
 
     /**
-     * Delete item from the data source
+     * Delete calendario from the data source
      */
-    suspend fun deleteItem(item: Item)
+    suspend fun deleteCalendario(item: Calendario)
 
     /**
-     * Update item in the data source
+     * Update calendario in the data source
      */
-    suspend fun updateItem(item: Item)
+    suspend fun updateCalendario(item: Calendario)
 }

@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package com.example.inventory.data
+package com.example.inventory
 
-import kotlinx.coroutines.flow.Flow
+import android.app.Application
+import com.example.inventory.data.AppContainer
+import com.example.inventory.data.AppDataContainer
 
-class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
-    override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
+class CalendariosApplication : Application() {
 
-    override fun getItemStream(id: Int): Flow<Item?> = itemDao.getItem(id)
+    /**
+     * AppContainer instance used by the rest of classes to obtain dependencies
+     */
+    lateinit var container: AppContainer
 
-    override suspend fun insertItem(item: Item) = itemDao.insert(item)
-
-    override suspend fun deleteItem(item: Item) = itemDao.delete(item)
-
-    override suspend fun updateItem(item: Item) = itemDao.update(item)
+    override fun onCreate() {
+        super.onCreate()
+        container = AppDataContainer(this)
+    }
 }

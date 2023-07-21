@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.example.inventory
+package com.example.inventory.data
 
-import android.app.Application
-import com.example.inventory.data.AppContainer
-import com.example.inventory.data.AppDataContainer
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-class InventoryApplication : Application() {
-
-    /**
-     * AppContainer instance used by the rest of classes to obtain dependencies
-     */
-    lateinit var container: AppContainer
-    override fun onCreate() {
-        super.onCreate()
-        container = AppDataContainer(this)
-    }
-}
+/**
+ * Entity data class represents a single row in the database.
+ */
+@Entity(tableName = "items")
+data class Calendario(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val mes: String,
+    val dias: Int,
+    val semanas: Int,
+    val festividad: String
+)
